@@ -58,4 +58,21 @@ public class AccountService {
         }
     }
 
+        public Account findByEmailAndPassword(String email, String password) {
+
+        if (password == null || password.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Password is empty"
+            );
+        }
+
+        final String hash = calcHash(password);
+        return accountRepository.findByEmailAndPasswordSha256(email, hash)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "Invalid email or password"
+            ))
+            .to();
+            
+    }
+
 }
